@@ -67,6 +67,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   // );
   // const tx2 = await  capTableRegistry.setCon
   console.log("CapTableQue deployed", capTableQue.address);
+  capTableQue.add(
+    "0xe7f1725e7734ce288f8367e1bb143e90bb3f0512",
+    ethers.utils.formatBytes32String("YOLO")
+  );
   console.log("CapTableRegistry deployed", capTableRegistryDeploy.address);
 };
 export default func;
