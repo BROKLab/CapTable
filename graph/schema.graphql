@@ -1,3 +1,0 @@
-type Que @entity {
-  id: ID!
-}
