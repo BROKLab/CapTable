@@ -1,69 +1,115 @@
 // SPDX-License-Identifier: MIT
-pragma solidity >=0.5.5;
+pragma solidity >=0.5.0;
 
 import "./Controllable.sol";
 
 contract CapTableRegistry is Controllable {
     address[] internal _capTables;
-    mapping(address => bool) internal _active;
+    mapping(address => uint256) internal _status; // 0:notUsed 1:qued 2:approved 3:declined 4:removed
     mapping(address => bytes32) internal _addressToUuid;
     mapping(bytes32 => address) internal _uuidToAddress;
     uint256 internal _activeCapTables;
+    uint256 internal _quedCapTables;
 
-    event capTableAdded(address indexed capTableAddress);
-    event capTableRemoved(address indexed capTableRemoved);
+    event capTableQued(address indexed capTableAddress, bytes32 indexed _uuid);
+    event capTableApproved(address indexed capTableAddress);
+    event capTableRemoved(address indexed capTableAddress);
+    event capTableDeclined(address indexed capTableAddress, bytes32 reason);
 
     constructor(address[] memory controllers)
+        public
         Controllable(controllers)
     {}
 
-    function add(address adr, bytes32 uuid) external {
-        _addCapTable(adr, uuid);
+    function que(address adr, bytes32 uuid) external {
+        _queCapTable(adr, uuid);
+    }
+
+    function approve(address adr) external {
+        _approveCapTable(adr);
+    }
+
+    function decline(address adr, bytes32 reason) external {
+        _declineCapTable(adr, reason);
     }
 
     function remove(address adr) external {
         _removeCapTable(adr);
     }
 
-    function list() external view returns (address[] memory capTableList) {
+    function getActiveCount() external view returns (uint256 activeCapTables) {
+        return _activeCapTables;
+    }
+
+    function getQuedCount() external view returns (uint256 quedCapTables) {
+        return _quedCapTables;
+    }
+
+    function getList() external view returns (address[] memory capTableList) {
         return _capTables;
     }
 
-    function info(address adr) external view returns (bytes32 uuid, bool active){
-        return (_addressToUuid[adr],_active[adr]);
-    }
-    function listActive()
-        external
-        view
-        returns (address[] memory capTableList)
-    {
-        require(_activeCapTables > 0, "CapTable list is empty");
-        address[] memory capTableAddressArray = new address[](_activeCapTables);
-        uint256 indexForCapTableAddressArray;
-        for (uint256 i = 0; i < _capTables.length; i++) {
-            if (_active[_capTables[i]]) {
-                capTableAddressArray[indexForCapTableAddressArray] = _capTables[i];
-                indexForCapTableAddressArray++;
-            }
-        }
-        return capTableAddressArray;
+    function getUuid(address adr) external view returns (bytes32 uuid) {
+        return _addressToUuid[adr];
     }
 
-    function _addCapTable(address adr, bytes32 uuid) internal {
-        require(isController(msg.sender), "msg.sender not controller");
+    function getStatus(address adr) external view returns (uint256 status) {
+        return _status[adr];
+    }
+
+    function getAddress(bytes32 uuid)
+        external
+        view
+        returns (address capTableAddress)
+    {
+        return _uuidToAddress[uuid];
+    }
+
+    function info(address adr)
+        external
+        view
+        returns (bytes32 uuid, uint256 active)
+    {
+        return (_addressToUuid[adr], _status[adr]);
+    }
+
+    function _queCapTable(address adr, bytes32 uuid) internal {
+        require(
+            _status[adr] != 1,
+            "Qued capTables must be declined before reQue"
+        );
+        require(_status[adr] != 2, "Cannot que active capTable");
         _capTables.push(adr);
-        _active[adr] = true;
+        _status[adr] = 1;
         _addressToUuid[adr] = uuid;
+        _quedCapTables++;
+        emit capTableQued(adr, uuid);
+    }
+
+    function _approveCapTable(address adr) internal {
+        require(_status[adr] == 1, "Only qued capTables can be approved");
+        require(isController(msg.sender), "msg.sender is not controller");
+        _status[adr] = 2;
+        bytes32 uuid = _addressToUuid[adr];
         _uuidToAddress[uuid] = adr;
+        _quedCapTables--;
         _activeCapTables++;
-        emit capTableAdded(adr);
+        emit capTableApproved(adr);
+    }
+
+    function _declineCapTable(address adr, bytes32 reason) internal {
+        require(_status[adr] == 1, "Only qued capTables can be declined");
+        require(isController(msg.sender), "msg.sender is not controller");
+        _status[adr] = 3;
+        _quedCapTables--;
+        emit capTableDeclined(adr, reason);
     }
 
     function _removeCapTable(address adr) internal {
-        require(isController(msg.sender), "msg.sender not controller");
+        require(_status[adr] == 2, "Only approved capTables can be removed");
+        require(isController(msg.sender), "msg.sender is not controller");
+        _status[adr] = 4;
         bytes32 uuid = _addressToUuid[adr];
-        _active[adr] = false;
-        _addressToUuid[adr] = bytes32(0);
         _uuidToAddress[uuid] = address(0);
         _activeCapTables--;
         emit capTableRemoved(adr);

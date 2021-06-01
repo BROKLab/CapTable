@@ -17,9 +17,9 @@ declare module "hardhat/types/runtime" {
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AuthProvider__factory>;
     getContractFactory(
-      name: "CapTableQue",
+      name: "CapTableFactory",
       signerOrOptions?: ethers.Signer | FactoryOptions
-    ): Promise<Contracts.CapTableQue__factory>;
+    ): Promise<Contracts.CapTableFactory__factory>;
     getContractFactory(
       name: "CapTableRegistry",
       signerOrOptions?: ethers.Signer | FactoryOptions

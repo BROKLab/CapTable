@@ -21,33 +21,54 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface CapTableRegistryInterface extends ethers.utils.Interface {
   functions: {
-    "add(address,bytes32)": FunctionFragment;
+    "approve(address)": FunctionFragment;
     "controllers()": FunctionFragment;
+    "decline(address,bytes32)": FunctionFragment;
+    "getActiveCount()": FunctionFragment;
+    "getAddress(bytes32)": FunctionFragment;
+    "getList()": FunctionFragment;
+    "getQuedCount()": FunctionFragment;
+    "getStatus(address)": FunctionFragment;
+    "getUuid(address)": FunctionFragment;
     "info(address)": FunctionFragment;
     "isController(address)": FunctionFragment;
-    "list()": FunctionFragment;
-    "listActive()": FunctionFragment;
+    "que(address,bytes32)": FunctionFragment;
     "remove(address)": FunctionFragment;
     "setControllers(address[])": FunctionFragment;
   };
 
-  encodeFunctionData(
-    functionFragment: "add",
-    values: [string, BytesLike]
-  ): string;
+  encodeFunctionData(functionFragment: "approve", values: [string]): string;
   encodeFunctionData(
     functionFragment: "controllers",
     values?: undefined
   ): string;
+  encodeFunctionData(
+    functionFragment: "decline",
+    values: [string, BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getActiveCount",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAddress",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(functionFragment: "getList", values?: undefined): string;
+  encodeFunctionData(
+    functionFragment: "getQuedCount",
+    values?: undefined
+  ): string;
+  encodeFunctionData(functionFragment: "getStatus", values: [string]): string;
+  encodeFunctionData(functionFragment: "getUuid", values: [string]): string;
   encodeFunctionData(functionFragment: "info", values: [string]): string;
   encodeFunctionData(
     functionFragment: "isController",
     values: [string]
   ): string;
-  encodeFunctionData(functionFragment: "list", values?: undefined): string;
   encodeFunctionData(
-    functionFragment: "listActive",
-    values?: undefined
+    functionFragment: "que",
+    values: [string, BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "remove", values: [string]): string;
   encodeFunctionData(
@@ -55,18 +76,30 @@ interface CapTableRegistryInterface extends ethers.utils.Interface {
     values: [string[]]
   ): string;
 
-  decodeFunctionResult(functionFragment: "add", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "approve", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "controllers",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "decline", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getActiveCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "getAddress", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getList", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getQuedCount",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(functionFragment: "getStatus", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "getUuid", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "info", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "isController",
     data: BytesLike
   ): Result;
-  decodeFunctionResult(functionFragment: "list", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "listActive", data: BytesLike): Result;
+  decodeFunctionResult(functionFragment: "que", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "remove", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "setControllers",
@@ -74,11 +107,15 @@ interface CapTableRegistryInterface extends ethers.utils.Interface {
   ): Result;
 
   events: {
-    "capTableAdded(address)": EventFragment;
+    "capTableApproved(address)": EventFragment;
+    "capTableDeclined(address,bytes32)": EventFragment;
+    "capTableQued(address,bytes32)": EventFragment;
     "capTableRemoved(address)": EventFragment;
   };
 
-  getEvent(nameOrSignatureOrTopic: "capTableAdded"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "capTableApproved"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "capTableDeclined"): EventFragment;
+  getEvent(nameOrSignatureOrTopic: "capTableQued"): EventFragment;
   getEvent(nameOrSignatureOrTopic: "capTableRemoved"): EventFragment;
 }
 
@@ -126,28 +163,58 @@ export class CapTableRegistry extends BaseContract {
   interface: CapTableRegistryInterface;
 
   functions: {
-    add(
+    approve(
       adr: string,
-      uuid: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     controllers(overrides?: CallOverrides): Promise<[string[]]>;
 
+    decline(
+      adr: string,
+      reason: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    getActiveCount(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { activeCapTables: BigNumber }>;
+
+    getAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string] & { capTableAddress: string }>;
+
+    getList(
+      overrides?: CallOverrides
+    ): Promise<[string[]] & { capTableList: string[] }>;
+
+    getQuedCount(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { quedCapTables: BigNumber }>;
+
+    getStatus(
+      adr: string,
+      overrides?: CallOverrides
+    ): Promise<[BigNumber] & { status: BigNumber }>;
+
+    getUuid(
+      adr: string,
+      overrides?: CallOverrides
+    ): Promise<[string] & { uuid: string }>;
+
     info(
       adr: string,
       overrides?: CallOverrides
-    ): Promise<[string, boolean] & { uuid: string; active: boolean }>;
+    ): Promise<[string, BigNumber] & { uuid: string; active: BigNumber }>;
 
     isController(adr: string, overrides?: CallOverrides): Promise<[boolean]>;
 
-    list(
-      overrides?: CallOverrides
-    ): Promise<[string[]] & { capTableList: string[] }>;
-
-    listActive(
-      overrides?: CallOverrides
-    ): Promise<[string[]] & { capTableList: string[] }>;
+    que(
+      adr: string,
+      uuid: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     remove(
       adr: string,
@@ -160,24 +227,43 @@ export class CapTableRegistry extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
-  add(
+  approve(
     adr: string,
-    uuid: BytesLike,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   controllers(overrides?: CallOverrides): Promise<string[]>;
 
+  decline(
+    adr: string,
+    reason: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  getActiveCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+  getAddress(uuid: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+  getList(overrides?: CallOverrides): Promise<string[]>;
+
+  getQuedCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+  getStatus(adr: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+  getUuid(adr: string, overrides?: CallOverrides): Promise<string>;
+
   info(
     adr: string,
     overrides?: CallOverrides
-  ): Promise<[string, boolean] & { uuid: string; active: boolean }>;
+  ): Promise<[string, BigNumber] & { uuid: string; active: BigNumber }>;
 
   isController(adr: string, overrides?: CallOverrides): Promise<boolean>;
 
-  list(overrides?: CallOverrides): Promise<string[]>;
-
-  listActive(overrides?: CallOverrides): Promise<string[]>;
+  que(
+    adr: string,
+    uuid: BytesLike,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   remove(
     adr: string,
@@ -190,20 +276,36 @@ export class CapTableRegistry extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
-    add(adr: string, uuid: BytesLike, overrides?: CallOverrides): Promise<void>;
+    approve(adr: string, overrides?: CallOverrides): Promise<void>;
 
     controllers(overrides?: CallOverrides): Promise<string[]>;
+
+    decline(
+      adr: string,
+      reason: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    getActiveCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAddress(uuid: BytesLike, overrides?: CallOverrides): Promise<string>;
+
+    getList(overrides?: CallOverrides): Promise<string[]>;
+
+    getQuedCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getStatus(adr: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getUuid(adr: string, overrides?: CallOverrides): Promise<string>;
 
     info(
       adr: string,
       overrides?: CallOverrides
-    ): Promise<[string, boolean] & { uuid: string; active: boolean }>;
+    ): Promise<[string, BigNumber] & { uuid: string; active: BigNumber }>;
 
     isController(adr: string, overrides?: CallOverrides): Promise<boolean>;
 
-    list(overrides?: CallOverrides): Promise<string[]>;
-
-    listActive(overrides?: CallOverrides): Promise<string[]>;
+    que(adr: string, uuid: BytesLike, overrides?: CallOverrides): Promise<void>;
 
     remove(adr: string, overrides?: CallOverrides): Promise<void>;
 
@@ -214,31 +316,66 @@ export class CapTableRegistry extends BaseContract {
   };
 
   filters: {
-    capTableAdded(
+    capTableApproved(
       capTableAddress?: string | null
     ): TypedEventFilter<[string], { capTableAddress: string }>;
 
+    capTableDeclined(
+      capTableAddress?: string | null,
+      reason?: null
+    ): TypedEventFilter<
+      [string, string],
+      { capTableAddress: string; reason: string }
+    >;
+
+    capTableQued(
+      capTableAddress?: string | null,
+      _uuid?: BytesLike | null
+    ): TypedEventFilter<
+      [string, string],
+      { capTableAddress: string; _uuid: string }
+    >;
+
     capTableRemoved(
-      capTableRemoved?: string | null
-    ): TypedEventFilter<[string], { capTableRemoved: string }>;
+      capTableAddress?: string | null
+    ): TypedEventFilter<[string], { capTableAddress: string }>;
   };
 
   estimateGas: {
-    add(
+    approve(
       adr: string,
-      uuid: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     controllers(overrides?: CallOverrides): Promise<BigNumber>;
 
+    decline(
+      adr: string,
+      reason: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    getActiveCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAddress(uuid: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getList(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getQuedCount(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getStatus(adr: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getUuid(adr: string, overrides?: CallOverrides): Promise<BigNumber>;
+
     info(adr: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     isController(adr: string, overrides?: CallOverrides): Promise<BigNumber>;
 
-    list(overrides?: CallOverrides): Promise<BigNumber>;
-
-    listActive(overrides?: CallOverrides): Promise<BigNumber>;
+    que(
+      adr: string,
+      uuid: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     remove(
       adr: string,
@@ -252,13 +389,39 @@ export class CapTableRegistry extends BaseContract {
   };
 
   populateTransaction: {
-    add(
+    approve(
       adr: string,
-      uuid: BytesLike,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     controllers(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    decline(
+      adr: string,
+      reason: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    getActiveCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getList(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getQuedCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getStatus(
+      adr: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getUuid(
+      adr: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     info(adr: string, overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
@@ -267,9 +430,11 @@ export class CapTableRegistry extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    list(overrides?: CallOverrides): Promise<PopulatedTransaction>;
-
-    listActive(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    que(
+      adr: string,
+      uuid: BytesLike,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
 
     remove(
       adr: string,

@@ -11,7 +11,7 @@ const _abi = [
     constant: true,
     inputs: [
       {
-        name: "interfaceID",
+        name: "interfaceId",
         type: "bytes4",
       },
     ],
@@ -25,6 +25,12 @@ const _abi = [
     payable: false,
     stateMutability: "view",
     type: "function",
+  },
+  {
+    inputs: [],
+    payable: false,
+    stateMutability: "nonpayable",
+    type: "constructor",
   },
 ];
 

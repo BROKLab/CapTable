@@ -1,6 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
 import { ethers } from "ethers";
+import { CapTableFactory, CapTableRegistry } from "../typechain";
 
 const ERC820_ADDRESS = "0x1820a4B7618BdE71Dce8cdc73aAB6C95905faD24";
 const TARGET_ADDRESS = "0xa990077c3205cbDf861e17Fa532eeB069cE9fF96";
@@ -13,10 +14,10 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   const signer = await getSigner(hre);
   let CONTROLLERS = [
-    "0xC9901c379E672912D86D12Cb8f182cFaf5951940",
+    "0xbbb7a6CC5b0757d60A457f2a1A667Aa53A13F515",
     signer.address,
   ];
-  console.log("Controllers => ", CONTROLLERS);
+  console.log("CapTableRegistry Controllers => ", CONTROLLERS);
 
   async function erc1820() {
     const code = await hre.ethers.provider.getCode(ERC820_ADDRESS);
@@ -40,34 +41,29 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
 
   await erc1820();
 
-  const capTableQueDeploy = await deploy("CapTableQue", {
+  const capTableRegistryDeploy = await deploy("CapTableRegistry", {
     from: deployer,
     // gas: 4000000,
     args: [CONTROLLERS],
   });
-
-  const CONTROLLERS_WITH_QUE = [...CONTROLLERS, capTableQueDeploy.address];
-
-  const capTableRegistryDeploy = await deploy("CapTableRegistry", {
+  const capTableFactoryDeploy = await deploy("CapTableFactory", {
     from: deployer,
     // gas: 4000000,
-    args: [CONTROLLERS_WITH_QUE],
+    args: [capTableRegistryDeploy.address],
   });
 
-  const capTableQue = await hre.ethers.getContractAt(
-    "CapTableQue",
-    capTableQueDeploy.address
-  );
-  const tx = await capTableQue.setRegistry(capTableRegistryDeploy.address);
-  await tx.wait();
+  const capTableRegistry = (await hre.ethers.getContractAt(
+    "CapTableRegistry",
+    capTableRegistryDeploy.address
+  )) as CapTableRegistry;
+  console.log("CapTableRegistry deployed", capTableRegistry.address);
 
-  // const capTableRegistry = await hre.ethers.getContractAt(
-  //   "CapTableRegistry",
-  //   capTableRegistryDeploy.address
-  // );
-  // const tx2 = await  capTableRegistry.setCon
-  console.log("CapTableQue deployed", capTableQue.address);
-  console.log("CapTableRegistry deployed", capTableRegistryDeploy.address);
+  const capTableFactory = (await hre.ethers.getContractAt(
+    "CapTableFactory",
+    capTableFactoryDeploy.address
+  )) as CapTableFactory;
+
+  console.log("CapTableFactory deployed", capTableFactory.address);
 };
 export default func;
 

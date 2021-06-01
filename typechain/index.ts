@@ -2,7 +2,7 @@
 /* tslint:disable */
 /* eslint-disable */
 export type { AuthProvider } from "./AuthProvider";
-export type { CapTableQue } from "./CapTableQue";
+export type { CapTableFactory } from "./CapTableFactory";
 export type { CapTableRegistry } from "./CapTableRegistry";
 export type { Controllable } from "./Controllable";
 export type { ControllerRole } from "./ControllerRole";
@@ -88,7 +88,7 @@ export type { IERC721Metadata } from "./IERC721Metadata";
 export type { IERC721Receiver } from "./IERC721Receiver";
 
 export { AuthProvider__factory } from "./factories/AuthProvider__factory";
-export { CapTableQue__factory } from "./factories/CapTableQue__factory";
+export { CapTableFactory__factory } from "./factories/CapTableFactory__factory";
 export { CapTableRegistry__factory } from "./factories/CapTableRegistry__factory";
 export { Controllable__factory } from "./factories/Controllable__factory";
 export { ControllerRole__factory } from "./factories/ControllerRole__factory";

@@ -11,6 +11,7 @@ import {
   PopulatedTransaction,
   BaseContract,
   ContractTransaction,
+  Overrides,
   CallOverrides,
 } from "ethers";
 import { BytesLike } from "@ethersproject/bytes";
@@ -18,25 +19,34 @@ import { Listener, Provider } from "@ethersproject/providers";
 import { FunctionFragment, EventFragment, Result } from "@ethersproject/abi";
 import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
-interface ERC165Interface extends ethers.utils.Interface {
+interface CapTableFactoryInterface extends ethers.utils.Interface {
   functions: {
-    "supportsInterface(bytes4)": FunctionFragment;
+    "getCapTableRegistryAddress()": FunctionFragment;
+    "createCapTable(bytes32,string,string)": FunctionFragment;
   };
 
   encodeFunctionData(
-    functionFragment: "supportsInterface",
-    values: [BytesLike]
+    functionFragment: "getCapTableRegistryAddress",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "createCapTable",
+    values: [BytesLike, string, string]
   ): string;
 
   decodeFunctionResult(
-    functionFragment: "supportsInterface",
+    functionFragment: "getCapTableRegistryAddress",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "createCapTable",
     data: BytesLike
   ): Result;
 
   events: {};
 }
 
-export class ERC165 extends BaseContract {
+export class CapTableFactory extends BaseContract {
   connect(signerOrProvider: Signer | Provider | string): this;
   attach(addressOrName: string): this;
   deployed(): Promise<this>;
@@ -77,40 +87,64 @@ export class ERC165 extends BaseContract {
     toBlock?: string | number | undefined
   ): Promise<Array<TypedEvent<EventArgsArray & EventArgsObject>>>;
 
-  interface: ERC165Interface;
+  interface: CapTableFactoryInterface;
 
   functions: {
-    supportsInterface(
-      interfaceId: BytesLike,
+    getCapTableRegistryAddress(
       overrides?: CallOverrides
-    ): Promise<[boolean]>;
+    ): Promise<[string] & { capTableRegistryAddress: string }>;
+
+    createCapTable(
+      uuid: BytesLike,
+      name: string,
+      symbol: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
   };
 
-  supportsInterface(
-    interfaceId: BytesLike,
-    overrides?: CallOverrides
-  ): Promise<boolean>;
+  getCapTableRegistryAddress(overrides?: CallOverrides): Promise<string>;
+
+  createCapTable(
+    uuid: BytesLike,
+    name: string,
+    symbol: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   callStatic: {
-    supportsInterface(
-      interfaceId: BytesLike,
+    getCapTableRegistryAddress(overrides?: CallOverrides): Promise<string>;
+
+    createCapTable(
+      uuid: BytesLike,
+      name: string,
+      symbol: string,
       overrides?: CallOverrides
-    ): Promise<boolean>;
+    ): Promise<void>;
   };
 
   filters: {};
 
   estimateGas: {
-    supportsInterface(
-      interfaceId: BytesLike,
-      overrides?: CallOverrides
+    getCapTableRegistryAddress(overrides?: CallOverrides): Promise<BigNumber>;
+
+    createCapTable(
+      uuid: BytesLike,
+      name: string,
+      symbol: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
   };
 
   populateTransaction: {
-    supportsInterface(
-      interfaceId: BytesLike,
+    getCapTableRegistryAddress(
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    createCapTable(
+      uuid: BytesLike,
+      name: string,
+      symbol: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
   };
 }
