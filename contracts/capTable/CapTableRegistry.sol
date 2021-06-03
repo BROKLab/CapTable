@@ -8,10 +8,11 @@ contract CapTableRegistry is Controllable {
     mapping(address => uint256) internal _status; // 0:notUsed 1:qued 2:approved 3:declined 4:removed
     mapping(address => bytes32) internal _addressToUuid;
     mapping(bytes32 => address) internal _uuidToAddress;
+    mapping(bytes32 => address) internal _uuidToQuedAddress;
     uint256 internal _activeCapTables;
     uint256 internal _quedCapTables;
 
-    event capTableQued(address indexed capTableAddress, bytes32 indexed _uuid);
+    event capTableQued(address indexed capTableAddress, bytes32 indexed uuid);
     event capTableApproved(address indexed capTableAddress);
     event capTableRemoved(address indexed capTableAddress);
     event capTableDeclined(address indexed capTableAddress, bytes32 reason);
@@ -65,6 +66,15 @@ contract CapTableRegistry is Controllable {
         return _uuidToAddress[uuid];
     }
 
+    // REVIEW : Only a helper function to retreive last qued address for an UUID. Somone can easily overwrite this, so its not safe. Can lead to confusion it result is not properly checked.
+    function getLastQuedAddress(bytes32 uuid)
+        external
+        view
+        returns (address capTableAddress)
+    {
+        return _uuidToQuedAddress[uuid];
+    }
+
     function info(address adr)
         external
         view
@@ -82,6 +92,7 @@ contract CapTableRegistry is Controllable {
         _capTables.push(adr);
         _status[adr] = 1;
         _addressToUuid[adr] = uuid;
+        _uuidToQuedAddress[uuid] = adr;
         _quedCapTables++;
         emit capTableQued(adr, uuid);
     }
@@ -92,6 +103,7 @@ contract CapTableRegistry is Controllable {
         _status[adr] = 2;
         bytes32 uuid = _addressToUuid[adr];
         _uuidToAddress[uuid] = adr;
+        _uuidToQuedAddress[uuid] = address(0);
         _quedCapTables--;
         _activeCapTables++;
         emit capTableApproved(adr);
@@ -102,6 +114,8 @@ contract CapTableRegistry is Controllable {
         require(isController(msg.sender), "msg.sender is not controller");
         _status[adr] = 3;
         _quedCapTables--;
+        bytes32 uuid = _addressToUuid[adr];
+        _uuidToQuedAddress[uuid] = address(0);
         emit capTableDeclined(adr, reason);
     }
 

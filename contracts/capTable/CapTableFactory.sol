@@ -28,6 +28,15 @@ contract CapTableFactory {
         return address(_capTableRegistry);
     }
 
+    // REVIEW : Only a helper function to retreive last qued address for an UUID. Somone can easily overwrite this, so its not safe. Can lead to confusion it result is not properly checked.
+    function getLastQuedAddress(bytes32 uuid)
+        external
+        view
+        returns (address quedCapTableRegistryAddress)
+    {
+        return _capTableRegistry.getLastQuedAddress(uuid);
+    }
+
     function createCapTable(
         bytes32 uuid,
         string calldata name,

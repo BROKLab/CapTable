@@ -21,10 +21,15 @@ import { TypedEventFilter, TypedEvent, TypedListener } from "./commons";
 
 interface CapTableFactoryInterface extends ethers.utils.Interface {
   functions: {
+    "getLastQuedAddress(bytes32)": FunctionFragment;
     "getCapTableRegistryAddress()": FunctionFragment;
     "createCapTable(bytes32,string,string)": FunctionFragment;
   };
 
+  encodeFunctionData(
+    functionFragment: "getLastQuedAddress",
+    values: [BytesLike]
+  ): string;
   encodeFunctionData(
     functionFragment: "getCapTableRegistryAddress",
     values?: undefined
@@ -34,6 +39,10 @@ interface CapTableFactoryInterface extends ethers.utils.Interface {
     values: [BytesLike, string, string]
   ): string;
 
+  decodeFunctionResult(
+    functionFragment: "getLastQuedAddress",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "getCapTableRegistryAddress",
     data: BytesLike
@@ -90,6 +99,11 @@ export class CapTableFactory extends BaseContract {
   interface: CapTableFactoryInterface;
 
   functions: {
+    getLastQuedAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string] & { quedCapTableRegistryAddress: string }>;
+
     getCapTableRegistryAddress(
       overrides?: CallOverrides
     ): Promise<[string] & { capTableRegistryAddress: string }>;
@@ -102,6 +116,11 @@ export class CapTableFactory extends BaseContract {
     ): Promise<ContractTransaction>;
   };
 
+  getLastQuedAddress(
+    uuid: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   getCapTableRegistryAddress(overrides?: CallOverrides): Promise<string>;
 
   createCapTable(
@@ -112,6 +131,11 @@ export class CapTableFactory extends BaseContract {
   ): Promise<ContractTransaction>;
 
   callStatic: {
+    getLastQuedAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     getCapTableRegistryAddress(overrides?: CallOverrides): Promise<string>;
 
     createCapTable(
@@ -125,6 +149,11 @@ export class CapTableFactory extends BaseContract {
   filters: {};
 
   estimateGas: {
+    getLastQuedAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
     getCapTableRegistryAddress(overrides?: CallOverrides): Promise<BigNumber>;
 
     createCapTable(
@@ -136,6 +165,11 @@ export class CapTableFactory extends BaseContract {
   };
 
   populateTransaction: {
+    getLastQuedAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getCapTableRegistryAddress(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;

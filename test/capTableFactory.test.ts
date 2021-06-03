@@ -1,19 +1,15 @@
-import { ethers, deployments } from "hardhat";
-import { Signer } from "ethers";
-import { CapTableRegistry__factory } from "../typechain/factories/CapTableRegistry__factory";
-import { CapTableRegistry } from "../typechain/CapTableRegistry";
-import { deployContract } from "ethereum-waffle";
-import CapTableRegistryArtifact from "../artifacts/contracts/capTable/CapTableRegistry.sol/CapTableRegistry.json";
-import { Wallet } from "ethers";
 import { expect } from "chai";
-import { CapTableFactory } from "../typechain";
+import { BigNumber } from "ethers";
+import { deployments, ethers } from "hardhat";
+import { CapTableFactory, ERC1400 } from "../typechain";
+import { CapTableRegistry } from "../typechain/CapTableRegistry";
 
 describe("CapTableFactory", function () {
   beforeEach(async function () {
     await deployments.fixture();
   });
 
-  it("should deploy capTable", async function () {
+  it("should deploy capTable, transfer rights and be issuable", async function () {
     const deployment = await deployments.getOrNull("CapTableFactory"); // Token is available because the fixture was executed
     if (!deployment) {
       throw Error("Deployment for test failed");
@@ -25,13 +21,6 @@ describe("CapTableFactory", function () {
 
     const randomWallet = ethers.Wallet.createRandom();
 
-    const tx = await capTableFactory.createCapTable(
-      ethers.utils.formatBytes32String("123"),
-      "Test Company",
-      "TST"
-    );
-    await tx.wait();
-
     const capTableRegistryAddress =
       await capTableFactory.getCapTableRegistryAddress();
 
@@ -39,8 +28,45 @@ describe("CapTableFactory", function () {
       "CapTableRegistry",
       capTableRegistryAddress
     )) as CapTableRegistry;
+
+    const tx = await capTableFactory.createCapTable(
+      ethers.utils.formatBytes32String("456"),
+      "Test Company",
+      "TST"
+    );
+    const res = await tx.wait();
+    const capTableAddress = await capTableRegistry.getLastQuedAddress(
+      ethers.utils.formatBytes32String("456")
+    );
     const capTables = await capTableRegistry.getList();
     console.log(capTables);
-    expect(capTables.length > 0);
+    expect(capTables.length > 0).to.be.true;
+    expect(capTables.includes(capTableAddress)).to.be.true;
+    const capTable = (await ethers.getContractAt(
+      "ERC1400",
+      capTableAddress
+    )) as ERC1400;
+    const owner = await capTable.owner();
+    const deployerAddress = (await ethers.getSigners())[0].address;
+    expect(owner === deployerAddress).to.be.true;
+    const controllers = await capTable.controllers();
+    expect(controllers.includes(deployerAddress)).to.be.true;
+    const isMinter = await capTable.isMinter(deployerAddress);
+    expect(isMinter).to.be.true;
+    const mintTx = await capTable.issueByPartition(
+      ethers.utils.formatBytes32String("ordinære"),
+      deployerAddress,
+      5000,
+      "0x11"
+    );
+    await mintTx.wait();
+
+    const totalSupply = await capTable.totalSupply();
+    console.log(
+      "total supply is ",
+      totalSupply,
+      totalSupply.gte(BigNumber.from(50001))
+    );
+    expect(totalSupply.gte(BigNumber.from(5000))).to.be.true;
   });
 });

@@ -26,6 +26,7 @@ interface CapTableRegistryInterface extends ethers.utils.Interface {
     "decline(address,bytes32)": FunctionFragment;
     "getActiveCount()": FunctionFragment;
     "getAddress(bytes32)": FunctionFragment;
+    "getLastQuedAddress(bytes32)": FunctionFragment;
     "getList()": FunctionFragment;
     "getQuedCount()": FunctionFragment;
     "getStatus(address)": FunctionFragment;
@@ -52,6 +53,10 @@ interface CapTableRegistryInterface extends ethers.utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getAddress",
+    values: [BytesLike]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getLastQuedAddress",
     values: [BytesLike]
   ): string;
   encodeFunctionData(functionFragment: "getList", values?: undefined): string;
@@ -87,6 +92,10 @@ interface CapTableRegistryInterface extends ethers.utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "getAddress", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "getLastQuedAddress",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(functionFragment: "getList", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getQuedCount",
@@ -185,6 +194,11 @@ export class CapTableRegistry extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string] & { capTableAddress: string }>;
 
+    getLastQuedAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<[string] & { capTableAddress: string }>;
+
     getList(
       overrides?: CallOverrides
     ): Promise<[string[]] & { capTableList: string[] }>;
@@ -244,6 +258,11 @@ export class CapTableRegistry extends BaseContract {
 
   getAddress(uuid: BytesLike, overrides?: CallOverrides): Promise<string>;
 
+  getLastQuedAddress(
+    uuid: BytesLike,
+    overrides?: CallOverrides
+  ): Promise<string>;
+
   getList(overrides?: CallOverrides): Promise<string[]>;
 
   getQuedCount(overrides?: CallOverrides): Promise<BigNumber>;
@@ -290,6 +309,11 @@ export class CapTableRegistry extends BaseContract {
 
     getAddress(uuid: BytesLike, overrides?: CallOverrides): Promise<string>;
 
+    getLastQuedAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<string>;
+
     getList(overrides?: CallOverrides): Promise<string[]>;
 
     getQuedCount(overrides?: CallOverrides): Promise<BigNumber>;
@@ -330,10 +354,10 @@ export class CapTableRegistry extends BaseContract {
 
     capTableQued(
       capTableAddress?: string | null,
-      _uuid?: BytesLike | null
+      uuid?: BytesLike | null
     ): TypedEventFilter<
       [string, string],
-      { capTableAddress: string; _uuid: string }
+      { capTableAddress: string; uuid: string }
     >;
 
     capTableRemoved(
@@ -358,6 +382,11 @@ export class CapTableRegistry extends BaseContract {
     getActiveCount(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAddress(uuid: BytesLike, overrides?: CallOverrides): Promise<BigNumber>;
+
+    getLastQuedAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getList(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -405,6 +434,11 @@ export class CapTableRegistry extends BaseContract {
     getActiveCount(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     getAddress(
+      uuid: BytesLike,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getLastQuedAddress(
       uuid: BytesLike,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
