@@ -16,6 +16,12 @@ task("accounts", "Prints the list of accounts", async (args, hre) => {
 });
 
 const config: HardhatUserConfig = {
+  paths: {
+    artifacts: "./src/artifacts",
+  },
+  typechain: {
+    outDir: "./src/typechain",
+  },
   networks: {
     besuDev: {
       url: "http://localhost:8545",

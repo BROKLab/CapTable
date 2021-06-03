@@ -4,12 +4,12 @@
   "description": "Contract artifacts for brok captables",
   "main": "index.js",
   "scripts": {
-    "prepublish": "npx hardhat deploy --network brok --export deployments/brok/all.json"
+    "prepublish": "npx hardhat deploy --network brok --export src/deployments_chainid_7766.json && npm build",
+    "build": "tsc -p tsconfig.release.json",
+    "build:watch": "tsc -w -p tsconfig.release.json"
   },
   "files": [
-    "artifacts",
-    "deployments/brok",
-    "typechain"
+    "lib/"
   ],
   "keywords": [],
   "author": "",

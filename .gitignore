@@ -5,3 +5,6 @@ cache
 artifacts
 deployments/localhost
 deployments/besuDev
+deployments*
+lib
+typechain

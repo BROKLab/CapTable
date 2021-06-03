@@ -1,11 +1,6 @@
-import { ethers, deployments } from "hardhat";
-import { Signer } from "ethers";
-import { CapTableRegistry__factory } from "./../typechain/factories/CapTableRegistry__factory";
-import { CapTableRegistry } from "./../typechain/CapTableRegistry";
-import { deployContract } from "ethereum-waffle";
-import CapTableRegistryArtifact from "./../artifacts/contracts/capTable/CapTableRegistry.sol/CapTableRegistry.json";
-import { Wallet } from "ethers";
 import { expect } from "chai";
+import { deployments, ethers } from "hardhat";
+import { CapTableRegistry } from "./../src/typechain";
 
 describe("CapTableRegistry", function () {
   beforeEach(async function () {

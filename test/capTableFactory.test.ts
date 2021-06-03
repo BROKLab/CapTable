@@ -1,8 +1,7 @@
 import { expect } from "chai";
 import { BigNumber } from "ethers";
 import { deployments, ethers } from "hardhat";
-import { CapTableFactory, ERC1400 } from "../typechain";
-import { CapTableRegistry } from "../typechain/CapTableRegistry";
+import { CapTableFactory, ERC1400, CapTableRegistry } from "./../src/typechain";
 
 describe("CapTableFactory", function () {
   beforeEach(async function () {
