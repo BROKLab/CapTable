@@ -1,10 +1,10 @@
 {
   "name": "@brok/captable-contracts",
-  "version": "1.1.0",
+  "version": "1.2.1",
   "description": "Contract artifacts for brok captables",
   "main": "index.js",
   "scripts": {
-    "prepublish": "npx hardhat deploy --network brok --export src/deployments_chainid_7766.json && npm build",
+    "prepublish": "npx hardhat deploy --network brok --export src/deployments_chainid_7766.json && npm run build",
     "build": "tsc -p tsconfig.release.json",
     "build:watch": "tsc -w -p tsconfig.release.json"
   },
