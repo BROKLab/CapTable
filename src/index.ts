@@ -1,6 +1,8 @@
 // import Deployments from "./deployments_chainid_7766.json";
-import deployments from "./deployments_chainid_7766.json";
-export const Deployments = deployments;
+import BrokStage from "./deploymentsBrokStage.json";
+export const Deployments = {
+  BrokStage,
+};
 import CapTableRegistry from "./artifacts/contracts/capTable/CapTableRegistry.sol/CapTableRegistry.json";
 import CapTableFactory from "./artifacts/contracts/capTable/CapTableFactory.sol/CapTableFactory.json";
 import ERC1400 from "./artifacts/contracts/ERC1400.sol/ERC1400.json";

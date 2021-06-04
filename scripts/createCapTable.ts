@@ -1,13 +1,15 @@
-import { run, ethers, deployments, network } from "hardhat";
-import { CapTableFactory, ERC1400 } from "../typechain";
+import { run, ethers, deployments, config } from "hardhat";
+import { CapTableFactory, ERC1400 } from "../src/typechain";
 
 async function main() {
   await run("compile");
 
-  // await deployments.fixture();
+  if (config.defaultNetwork === "hardhat") {
+    await deployments.fixture();
+  }
   const deployment = await deployments.getOrNull("CapTableFactory"); // Token is available because the fixture was executed
   if (!deployment) {
-    throw Error("Deployment for test failed");
+    throw Error("You need to run deployment for " + config.defaultNetwork);
   }
   const capTableFactory = (await ethers.getContractAt(
     "CapTableFactory",
@@ -19,7 +21,13 @@ async function main() {
   const randomNumber = Math.floor(Math.random() * 1000000000).toString();
   const uuid = ethers.utils.formatBytes32String(randomNumber);
   const companyName = "ISSUE Company " + randomNumber;
-  const tx = await capTableFactory.createCapTable(uuid, companyName, "TEST");
+  const tx = await capTableFactory.createCapTable(
+    uuid,
+    companyName,
+    "TEST",
+    [accounts[0].address],
+    [25000]
+  );
   await tx.wait();
   const capTableAddress = await capTableFactory.getLastQuedAddress(uuid);
   console.log("capTableAddress", capTableAddress);
@@ -27,10 +35,11 @@ async function main() {
     "ERC1400",
     capTableAddress
   )) as ERC1400;
+
   const mintTx = await capTable.issueByPartition(
     ethers.utils.formatBytes32String("ordinære"),
     accounts[0].address,
-    25000,
+    5000,
     "0x11"
   );
   await mintTx.wait();

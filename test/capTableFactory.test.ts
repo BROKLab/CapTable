@@ -19,6 +19,7 @@ describe("CapTableFactory", function () {
     )) as CapTableFactory;
 
     const randomWallet = ethers.Wallet.createRandom();
+    const deployerAddress = (await ethers.getSigners())[0].address;
 
     const capTableRegistryAddress =
       await capTableFactory.getCapTableRegistryAddress();
@@ -31,7 +32,9 @@ describe("CapTableFactory", function () {
     const tx = await capTableFactory.createCapTable(
       ethers.utils.formatBytes32String("456"),
       "Test Company",
-      "TST"
+      "TST",
+      [deployerAddress, randomWallet.address],
+      [8000, 3000]
     );
     const res = await tx.wait();
     const capTableAddress = await capTableRegistry.getLastQuedAddress(
@@ -46,12 +49,14 @@ describe("CapTableFactory", function () {
       capTableAddress
     )) as ERC1400;
     const owner = await capTable.owner();
-    const deployerAddress = (await ethers.getSigners())[0].address;
+
     expect(owner === deployerAddress).to.be.true;
     const controllers = await capTable.controllers();
     expect(controllers.includes(deployerAddress)).to.be.true;
     const isMinter = await capTable.isMinter(deployerAddress);
     expect(isMinter).to.be.true;
+
+    // Mint
     const mintTx = await capTable.issueByPartition(
       ethers.utils.formatBytes32String("ordinære"),
       deployerAddress,
@@ -61,11 +66,15 @@ describe("CapTableFactory", function () {
     await mintTx.wait();
 
     const totalSupply = await capTable.totalSupply();
-    console.log(
-      "total supply is ",
-      totalSupply,
-      totalSupply.gte(BigNumber.from(50001))
-    );
     expect(totalSupply.gte(BigNumber.from(5000))).to.be.true;
+    console.log("Total supply is ", totalSupply.toString());
+    console.log(
+      "Deployer balance",
+      (await capTable.balanceOf(deployerAddress)).toString()
+    );
+    console.log(
+      "RandomWallet balance",
+      (await capTable.balanceOf(randomWallet.address)).toString()
+    );
   });
 });

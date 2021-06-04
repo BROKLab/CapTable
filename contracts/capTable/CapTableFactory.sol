@@ -2,13 +2,13 @@
 pragma solidity >=0.5.0;
 import "./../ERC1400.sol";
 import "./CapTableRegistry.sol";
-import "./Controllable.sol";
 
 contract CapTableFactory {
     CapTableRegistry internal _capTableRegistry;
     uint256 internal _defaultGranularity;
     address[] internal _defaultControllers;
     bytes32[] internal _defaultPartitions;
+    bytes32 internal _defaultIssueData;
 
     constructor(address capTableRegistryAddress) public {
         _defaultGranularity = 1;
@@ -40,10 +40,13 @@ contract CapTableFactory {
     function createCapTable(
         bytes32 uuid,
         string calldata name,
-        string calldata symbol
+        string calldata symbol,
+        address[] calldata to,
+        uint256[] calldata value
     ) external {
         _defaultControllers[1] = msg.sender; // REVIEW IS THIS SAFE?
         bytes32[] memory defaultPartitions = _defaultPartitions;
+        bytes memory defaultIssueData = abi.encodePacked(_defaultIssueData);
         ERC1400 capTable =
             new ERC1400(
                 name,
@@ -52,9 +55,17 @@ contract CapTableFactory {
                 _defaultControllers,
                 defaultPartitions
             );
+        _capTableRegistry.que(address(capTable), uuid);
+        for (uint256 i = 0; i < to.length; i++) {
+            capTable.issueByPartition(
+                _defaultPartitions[0], // Cant accept partitions also as it would trigger stack to deep.
+                to[i],
+                value[i],
+                defaultIssueData
+            );
+        }
         capTable.addMinter(msg.sender);
         capTable.removeMinter(address(this));
         capTable.transferOwnership(msg.sender);
-        _capTableRegistry.que(address(capTable), uuid);
     }
 }
