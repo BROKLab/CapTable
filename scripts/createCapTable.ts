@@ -1,10 +1,10 @@
-import { run, ethers, deployments, config } from "hardhat";
+import { run, ethers, deployments, config, network } from "hardhat";
 import { CapTableFactory, ERC1400 } from "../src/typechain";
 
 async function main() {
   await run("compile");
-
-  if (config.defaultNetwork === "hardhat") {
+  console.log("Deploying capTable on ", network.name);
+  if (network.name === "hardhat") {
     await deployments.fixture();
   }
   const deployment = await deployments.getOrNull("CapTableFactory"); // Token is available because the fixture was executed
