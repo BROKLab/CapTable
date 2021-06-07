@@ -16,4 +16,4 @@ export const Artifacts = {
   AuthProvider,
   ERC1400AuthValidator,
 };
-export * from "./typechain";
+export * from "./typechain/index";

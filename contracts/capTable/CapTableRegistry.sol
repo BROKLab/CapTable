@@ -75,14 +75,6 @@ contract CapTableRegistry is Controllable {
         return _uuidToQuedAddress[uuid];
     }
 
-    function info(address adr)
-        external
-        view
-        returns (bytes32 uuid, uint256 active)
-    {
-        return (_addressToUuid[adr], _status[adr]);
-    }
-
     function _queCapTable(address adr, bytes32 uuid) internal {
         require(
             _status[adr] != 1,
