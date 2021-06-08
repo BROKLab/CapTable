@@ -13,7 +13,7 @@ import "../../interface/ERC1820Implementer.sol";
 
 import "../../IERC1400.sol";
 
-import "../../IAuthProvider.sol";
+import "../../authProvider/AuthProvider.sol";
 
 import "./IERC1400TokensValidator.sol";
 
@@ -34,12 +34,12 @@ contract ERC1400AuthValidator is
     string internal constant ERC1400_TOKENS_VALIDATOR =
         "ERC1400TokensValidator";
     string internal constant ERC1400_AUTH_VALIDATOR = "ERC1400AuthValidator";
-    IAuthProvider internal _authProvider;
+    AuthProvider internal _authProvider;
 
     constructor(address authProviderAddress) public {
         ERC1820Implementer._setInterface(ERC1400_TOKENS_VALIDATOR);
         ERC1820Implementer._setInterface(ERC1400_AUTH_VALIDATOR);
-        _authProvider = IAuthProvider(authProviderAddress);
+        _authProvider = AuthProvider(authProviderAddress);
     }
 
     /**

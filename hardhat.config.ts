@@ -32,7 +32,15 @@ const config: HardhatUserConfig = {
     brokStage: {
       url: "https://e0ri5j5fp2:pA0jrXjkbgdltvu2iaXE7q9NjQy57S1AIF-v0FXyuJ4@e0mvr9jrs7-e0iwsftiw5-rpc.de0-aws.kaleido.io/",
       accounts: {
-        mnemonic: "test test test test test test test test test test test junk",
+        mnemonic:
+          "coffee explain often powder satoshi jeans trade gas feel solid coil scheme",
+      },
+    },
+    brokTest: {
+      url: "https://e0ri5j5fp2:pA0jrXjkbgdltvu2iaXE7q9NjQy57S1AIF-v0FXyuJ4@e0mvr9jrs7-e0iwsftiw5-rpc.de0-aws.kaleido.io/",
+      accounts: {
+        mnemonic:
+          "adjust power answer goat stool paper ladder alter eternal order oyster inner",
       },
     },
   },

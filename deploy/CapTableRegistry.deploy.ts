@@ -13,10 +13,7 @@ const func: DeployFunction = async function (hre: HardhatRuntimeEnvironment) {
   const { deployer } = await hre.getNamedAccounts();
 
   const signer = await getSigner(hre);
-  let CONTROLLERS = [
-    "0xbbb7a6CC5b0757d60A457f2a1A667Aa53A13F515",
-    signer.address,
-  ];
+  let CONTROLLERS = [signer.address];
   console.log("CapTableRegistry Controllers => ", CONTROLLERS);
 
   async function erc1820() {

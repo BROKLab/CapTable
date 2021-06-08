@@ -1,13 +1,17 @@
 {
   "name": "@brok/captable-contracts",
-  "version": "1.2.9",
+  "version": "1.3.0",
   "description": "Contract artifacts for brok captables",
   "main": "./lib/index.js",
   "typings": "./lib/index.d.ts",
   "scripts": {
-    "prepublishOnly": "npx hardhat deploy --network brokStage --export src/DeploymentsBrokStage.json && run-s build",
+    "prepublishOnly": "run-s deploy:brokTest  && run-s deploy:brokStage && run-s build",
     "copy-dts": "copyfiles -u 1 \"src/typechain/**/*.d.ts\" ./lib",
-    "build": "rm -rf lib && tsc -p tsconfig.release.json && run-s copy-dts"
+    "build": "rm -rf lib && tsc -p tsconfig.release.json && run-s copy-dts",
+    "deploy:brokTest": "npx hardhat deploy --network brokTest --export src/DeploymentsBrokTest.json",
+    "deploy:brokStage": "npx hardhat deploy --network brokStage --export src/DeploymentsBrokStage.json",
+    "create:brokTest:captable": "hh run scripts/createCapTable.ts --network brokTest",
+    "create:brokStage:captable": "hh run scripts/createCapTable.ts --network brokStage"
   },
   "files": [
     "lib/"
