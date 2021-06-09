@@ -1,9 +1,9 @@
 // import Deployments from "./deployments_chainid_7766.json";
-import BrokStage from "./deploymentsBrokStage.json";
-import BrokTest from "./deploymentsBrokTest.json";
+import brokStage from "./deploymentsBrokStage.json";
+import brokTest from "./deploymentsBrokTest.json";
 export const Deployments = {
-  BrokStage,
-  BrokTest,
+  brokStage,
+  brokTest,
 };
 import CapTableRegistry from "./artifacts/contracts/capTable/CapTableRegistry.sol/CapTableRegistry.json";
 import CapTableFactory from "./artifacts/contracts/capTable/CapTableFactory.sol/CapTableFactory.json";
