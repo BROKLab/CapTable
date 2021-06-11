@@ -1,5 +1,5 @@
 pragma solidity ^0.5.16;
-
+// Props to https://github.com/uport-project/ethr-did-registry/pull/33
 import "./IERC1271.sol";
 
 // libraries
