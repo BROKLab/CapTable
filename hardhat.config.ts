@@ -43,6 +43,13 @@ const config: HardhatUserConfig = {
           "adjust power answer goat stool paper ladder alter eternal order oyster inner",
       },
     },
+    arbitrum: {
+      url: "https://rinkeby.arbitrum.io/rpc",
+      accounts: {
+        mnemonic:
+          "adjust power answer goat stool paper ladder alter eternal order oyster inner",
+      },
+    },
   },
   namedAccounts: {
     deployer: {
@@ -55,6 +62,15 @@ const config: HardhatUserConfig = {
   // },
   solidity: {
     compilers: [
+      {
+        version: "0.5.16",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 500,
+          },
+        },
+      },
       {
         version: "0.7.3",
         settings: {
