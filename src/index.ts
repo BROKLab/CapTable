@@ -10,6 +10,7 @@ import CapTableFactory from "./artifacts/contracts/capTable/CapTableFactory.sol/
 import ERC1400 from "./artifacts/contracts/ERC1400.sol/ERC1400.json";
 import AuthProvider from "./artifacts/contracts/authProvider/AuthProvider.sol/AuthProvider.json";
 import ERC1400AuthValidator from "./artifacts/contracts/extensions/tokenExtensions/ERC1400AuthValidator.sol/ERC1400AuthValidator.json";
+import EthereumDIDRegistry from "./artifacts/contracts/dids/EthereumDIDRegistry.sol/EthereumDIDRegistry.json";
 
 export const Artifacts = {
   CapTableRegistry,
@@ -17,5 +18,6 @@ export const Artifacts = {
   ERC1400,
   AuthProvider,
   ERC1400AuthValidator,
+  EthereumDIDRegistry,
 };
 export * from "./typechain/index";
