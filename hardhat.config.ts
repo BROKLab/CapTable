@@ -30,14 +30,14 @@ const config: HardhatUserConfig = {
       ],
     },
     brokStage: {
-      url: "https://e0ri5j5fp2:pA0jrXjkbgdltvu2iaXE7q9NjQy57S1AIF-v0FXyuJ4@e0mvr9jrs7-e0iwsftiw5-rpc.de0-aws.kaleido.io/",
+      url: "https://arbitrum-rinkeby.infura.io/v3/eaa35471bb7947adb685b17daa1030d4",
       accounts: {
         mnemonic:
           "coffee explain often powder satoshi jeans trade gas feel solid coil scheme",
       },
     },
     brokTest: {
-      url: "https://e0ri5j5fp2:pA0jrXjkbgdltvu2iaXE7q9NjQy57S1AIF-v0FXyuJ4@e0mvr9jrs7-e0iwsftiw5-rpc.de0-aws.kaleido.io/",
+      url: "https://arbitrum-rinkeby.infura.io/v3/d459cbc007fc49d2a44afbccc975e35c",
       accounts: {
         mnemonic:
           "adjust power answer goat stool paper ladder alter eternal order oyster inner",
